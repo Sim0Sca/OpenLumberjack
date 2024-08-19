@@ -13,7 +13,7 @@ const RED = "rgb(255, 0, 0)";
 const GREEN = "rgb(0, 255, 0)";
 const BROWN = "rgb(139, 69, 19)";
 const BRICK_RED = "rgba(128, 29, 12, 0.8)";
-const BRICK_RED_TRANSPARENT = "rgba(128, 29, 12, 0.5)";
+const BRICK_RED_TRANSPARENT = "rgba(128, 29, 12, 0.6)";
 
 //! MEDIA VARIABLES
 // Sounds
@@ -70,6 +70,8 @@ const PAUSE_BUTTON_X = WIDTH - 100;
 const PAUSE_BUTTON_Y = 10;
 const PAUSE_BUTTON_WIDTH = 90;
 const PAUSE_BUTTON_HEIGHT = 38;
+// Tutorial button variable (the others are the same of the pause)
+const TUTORIAL_BUTTON_Y = PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT + 10;
 
 //! GAME VARIABLES
 // Time
@@ -84,6 +86,7 @@ let timer = max_timer / 2;
 let game_started = false;
 let game_over = false;
 let game_paused = false;
+let game_tutorial = false; // tutorial
 let tree_y = 0;
 let is_tree_sliding = false;
 let prev_target_height = 0;
@@ -107,7 +110,11 @@ function handleKeyDown(event) {
         }
     } else if (game_started && !game_over && !game_paused) {
         if (event.code === 'Space') {
-            pauseGame();
+            //pauseGame();
+            pauseGame(false);
+        }
+        if (event.code === 'Enter') {
+            pauseGame(true);
         }
         if (event.code === 'ArrowLeft') {
             movePlayer('left');
@@ -145,7 +152,10 @@ function handleMouseDown(event) {
 
         // TODO Works in mobile, but not in Desktop
         if (x >= PAUSE_BUTTON_X && x <= PAUSE_BUTTON_X + PAUSE_BUTTON_WIDTH && y >= PAUSE_BUTTON_Y && y <= PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT) {
-            pauseGame();
+            pauseGame(false);
+        }
+        else if (x >= PAUSE_BUTTON_X && x <= PAUSE_BUTTON_X + PAUSE_BUTTON_WIDTH && y >= PAUSE_BUTTON_Y && y <= PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT) {
+            pauseGame(true);
         }
         else {
             movePlayer(x < WIDTH / 2 ? 'left' : 'right');
@@ -174,9 +184,15 @@ function handleMouseOver(event) {
 //! Game states functions
 //////////////////////////////////////////////////
 
-function pauseGame() {
+function pauseGame(check) {
     game_paused = true;
     game_started = false;
+
+    if (check == true) {
+        game_tutorial = true;
+    } else {
+        game_tutorial = false;
+    }
 
     pauseSound.play();
 }
@@ -375,15 +391,30 @@ function draw() {
         ctx.fillText("Premi per ricominciare", WIDTH / 2, HEIGHT / 2 + 120);
     } else if (game_paused) {
         draw_scene();
-        ctx.fillStyle = BRICK_RED_TRANSPARENT;
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        ctx.fillStyle = WHITE;
-        ctx.textAlign = "center";
-        ctx.fillText("Pausa", WIDTH / 2, HEIGHT / 2);
+        if (!game_tutorial) {
+            ctx.fillStyle = BRICK_RED_TRANSPARENT;
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            ctx.fillStyle = WHITE;
+            ctx.textAlign = "center";
+            ctx.fillText("Pausa", WIDTH / 2, HEIGHT / 2); 
+            ctx.fillText("Premi per tornare al gioco", WIDTH / 2, HEIGHT / 2 + 40);
+        } else {
+            ctx.fillStyle = BRICK_RED_TRANSPARENT;
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            ctx.fillStyle = WHITE;
+            ctx.textAlign = "center";
+            ctx.fillText("Obbiettivo: Tagliare il tronco senza farti colpire dai rami", WIDTH / 2, HEIGHT / 2 - 160);
+            ctx.fillText("Comandi", WIDTH / 2, HEIGHT / 2 -80);
+            ctx.fillText(`Premi lato/tasto destro per muoverti a destra`, WIDTH / 2, HEIGHT / 2 -40);
+            ctx.fillText(`Premi lato/tasto sinisro per muoverti a sinisra`, WIDTH / 2, HEIGHT / 2);
+            ctx.fillText(`Premi spazio per andare in pausa (solo PC)`, WIDTH / 2, HEIGHT / 2 + 40);
+            ctx.fillText(`Premi enter per mostrare questo tutorial (solo PC)`, WIDTH / 2, HEIGHT / 2 + 80);
+            ctx.fillText("Premi per tornare al gioco", WIDTH / 2, HEIGHT / 2 + 120);
+        }
     } else {
         draw_scene();
 
-        // Disegna il punteggio
+        // Draw the score
         ctx.fillStyle = BRICK_RED;
         ctx.textAlign = "left";
         let textWidth = ctx.measureText(`Punteggio: ${score}`).width + 20;
@@ -393,19 +424,25 @@ function draw() {
         ctx.fillText(`Punteggio: ${score}`, 20, 35);
         ctx.fillText(`Record: ${max_score}`, 20, 75);
 
-        // Disegna il timer
+        // Draw the timer
         ctx.strokeStyle = BLACK;
         ctx.lineWidth = 2;
         ctx.strokeRect(10, HEIGHT - 30, WIDTH / 5, 20);
         ctx.fillStyle = GREEN;
         ctx.fillRect(12, HEIGHT - 28, (WIDTH / 5 - 2) * (timer / max_timer), 16);
 
-        // Disegna il pulsante di pausa (Versione beta, sostituire testo con immagine) 
+        // Draw the pause button (Beta version, substitute it with an image) 
         ctx.fillStyle = BRICK_RED;
         ctx.textAlign = "center";
         ctx.fillRect(PAUSE_BUTTON_X, PAUSE_BUTTON_Y, PAUSE_BUTTON_WIDTH, PAUSE_BUTTON_HEIGHT);
         ctx.fillStyle = WHITE;
         ctx.fillText("Pausa", WIDTH - 54, 35);
+
+        // Draw the tutorial button
+        ctx.fillStyle = BRICK_RED;
+        ctx.fillRect(PAUSE_BUTTON_X, PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT + 10, PAUSE_BUTTON_WIDTH, PAUSE_BUTTON_HEIGHT); // Aumenta Y per posizionarlo sotto
+        ctx.fillStyle = WHITE;
+        ctx.fillText("Tutorial", PAUSE_BUTTON_X + 5, PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT + 20); // Aumenta Y per centrare il testo
     }
 }
 
