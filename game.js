@@ -154,7 +154,7 @@ function handleMouseDown(event) {
         if (x >= PAUSE_BUTTON_X && x <= PAUSE_BUTTON_X + PAUSE_BUTTON_WIDTH && y >= PAUSE_BUTTON_Y && y <= PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT) {
             pauseGame(false);
         }
-        else if (x >= PAUSE_BUTTON_X && x <= PAUSE_BUTTON_X + PAUSE_BUTTON_WIDTH && y >= PAUSE_BUTTON_Y && y <= PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT) {
+        else if (x >= PAUSE_BUTTON_X && x <= PAUSE_BUTTON_X + PAUSE_BUTTON_WIDTH && y >= TUTORIAL_BUTTON_Y && y <= TUTORIAL_BUTTON_Y + PAUSE_BUTTON_HEIGHT) {
             pauseGame(true);
         }
         else {
@@ -439,10 +439,12 @@ function draw() {
         ctx.fillText("Pausa", WIDTH - 54, 35);
 
         // Draw the tutorial button
+        let tutorialButtonWidth = ctx.measureText(`Tutorial`).width;
+        let tutorial_button_x = WIDTH-tutorialButtonWidth;
         ctx.fillStyle = BRICK_RED;
-        ctx.fillRect(PAUSE_BUTTON_X, PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT + 10, PAUSE_BUTTON_WIDTH, PAUSE_BUTTON_HEIGHT); // Aumenta Y per posizionarlo sotto
+        ctx.fillRect(tutorial_button_x, TUTORIAL_BUTTON_Y, tutorialButtonWidth, PAUSE_BUTTON_HEIGHT); // Aumenta Y per posizionarlo sotto
         ctx.fillStyle = WHITE;
-        ctx.fillText("Tutorial", PAUSE_BUTTON_X + 5, PAUSE_BUTTON_Y + PAUSE_BUTTON_HEIGHT + 20); // Aumenta Y per centrare il testo
+        ctx.fillText("Tutorial", tutorial_button_x + 110, TUTORIAL_BUTTON_Y + 30); // Aumenta Y per centrare il testo
     }
 }
 
